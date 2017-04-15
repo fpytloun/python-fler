@@ -19,3 +19,9 @@ following way:
 In this way all items will get topped during the time.
 It's simple to customize the script to filter by category and top only some
 items.
+
+Send stats to Graphite Carbon
+-----------------------------
+
+Script ``stats.py`` will collect various statistics and send them into
+Graphite's Carbon.

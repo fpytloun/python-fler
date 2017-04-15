@@ -7,7 +7,7 @@ from fler import Fler
 
 
 def parse_args():
-    parser = argparse.ArgumentParser("aptly-publisher")
+    parser = argparse.ArgumentParser("Fler products topping")
     parser.add_argument('-v', '--verbose', action="store_true")
     parser.add_argument('-d', '--debug', action="store_true")
     parser.add_argument('--private-key', required=True)
@@ -32,8 +32,7 @@ def main():
     fler = Fler((args.private_key, args.public_key))
 
     topped = []
-    topable = fler.get_topable()
-    for product in topable:
+    for product in fler.get_topable():
         try:
             fler.top(product['id'])
             topped.append(product['id'])

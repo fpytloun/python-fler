@@ -105,7 +105,7 @@ class Fler(object):
         return self.request("/user/account/info")
 
     def get_products(self, id=None, fields=None, status="STATUS_AVAILABLE",
-                     sort="NAME", sort_reverse=False):
+                     sort="NAME", sort_reverse=False, extended=False):
         # https://www.fler.cz/uzivatel/nastroje/flerapi?view=docs&url=%2Fapi%2Frest%2Fseller%2Fproducts%2Flist
         if not fields:
             fields = self.product_fields
@@ -120,6 +120,9 @@ class Fler(object):
                 payload["type"] = status
             if sort:
                 payload["sort"] = sort
+
+        if extended:
+            payload["conf"] = "extended_info"
 
         products = self.request("/seller/products/list", payload=payload)
         if sort_reverse:
