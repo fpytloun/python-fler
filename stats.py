@@ -4,7 +4,6 @@
 import time
 import logging
 import argparse
-import json
 import socket
 from fler import Fler
 
@@ -45,11 +44,21 @@ def write_carbon(args, data, timestamp=None):
         timestamp = int(time.time())
 
     msg = dict2carbon(data, timestamp, path="fler")
+    logging.debug("Connected to carbon server %s:%s" % (args.carbon_host, args.carbon_port))
+    sock = socket.socket()
+    sock.connect((args.carbon_host, args.carbon_port))
     for m in msg:
         logging.debug(m)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto("%s\n" % m, (args.carbon_host, args.carbon_port))
-        sock.close()
+        sock.sendall("%s\n" % m)
+    sock.close()
+
+
+def fix_timestamp(ts):
+    # Fix some weird timestamps having 2 instead of 1 as the first number
+    ts = int(ts)
+    if ts > 2490000000:
+        ts = ts - 1000000000
+    return ts
 
 
 def main():
@@ -84,6 +93,10 @@ def main():
             'accepted': stats['orders']['count.accepted'],
             'paid': stats['orders']['count.paid'],
         },
+        'sellrating': {
+            'average': stats['sellrating']['average'] or 0,
+            'count': stats['sellrating']['count'],
+        },
         'turnover': stats['turnover']['total'],
         'flerpost': {
             'new': stats['flerpost']['message.count.new'],
@@ -102,8 +115,8 @@ def main():
             "price": float(product["price"]),
             "price_without_prov": float(product["price_without_prov"]),
             "stock": int(product["stock"]),
-            "inserted": int(product["ts_ins"]),
-            "topped": int(product["ts_top"]),
+            "inserted": fix_timestamp(product["ts_ins"]),
+            "topped": fix_timestamp(product["ts_top"]),
         }
 
     write_carbon(args, res)
