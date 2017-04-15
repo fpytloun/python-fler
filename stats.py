@@ -116,7 +116,9 @@ def main():
             "price_without_prov": float(product["price_without_prov"]),
             "stock": int(product["stock"]),
             "inserted": fix_timestamp(product["ts_ins"]),
+            "inserted_duration": int(time.time()) - fix_timestamp(product["ts_ins"]),
             "topped": fix_timestamp(product["ts_top"]),
+            "topped_duration": int(time.time()) - fix_timestamp(product["ts_top"]),
         }
 
     write_carbon(args, res)
