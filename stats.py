@@ -62,16 +62,35 @@ def main():
     fler = Fler((args.private_key, args.public_key))
 
     # Account info
-    info = fler.get_account_info()
+    account = fler.get_account_info()
     products = fler.get_products()
+    stats = fler.request("/seller/statistics/overview")
     res['account'] = {
-        'fans': info["seller"]["fans_count"],
-        'rank': float(info["seller"]["fler_rank"]),
-        'rating_count': info["seller"]["rating_count"],
-        'rating_pct': info["seller"]["rating_pct"],
+        'fans': account["seller"]["fans_count"],
+        'rank': float(account["seller"]["fler_rank"]),
+        'rating_count': account["seller"]["rating_count"],
+        'rating_pct': account["seller"]["rating_pct"],
+        'likes': stats['likes']['count'],
+        'views': {
+            'shop': stats['views']['shop'],
+            'shop_sold': stats['views']['shop.sold'],
+            'profile': stats['views']['profile'],
+            'total': stats['views']['total'],
+        },
+        'orders': {
+            'new': stats['orders']['count.new'],
+            'finished': stats['orders']['count.finished'],
+            'total': stats['orders']['count.total'],
+            'accepted': stats['orders']['count.accepted'],
+            'paid': stats['orders']['count.paid'],
+        },
+        'turnover': stats['turnover']['total'],
+        'flerpost': {
+            'new': stats['flerpost']['message.count.new'],
+        },
     }
     res['account']['products_available'] = len(products)
-    res["account"]["products_sold"] = info["seller"]["products_sold_count"]
+    res["account"]["products_sold"] = account["seller"]["products_sold_count"]
 
     for product in products:
         res['product'][product["id"]] = {
