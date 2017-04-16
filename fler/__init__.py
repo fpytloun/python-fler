@@ -149,7 +149,7 @@ class Fler(object):
         products = []
         for product in ret:
             if bool(product["is_topable"]):
-                last_top = datetime.fromtimestamp(float(product["ts_top"]))
+                last_top = datetime.fromtimestamp(float(self.fix_timestamp(product["ts_top"])))
                 next_top = last_top + top_config[1]
                 if next_top <= datetime.now():
                     products.append(product)
@@ -161,6 +161,13 @@ class Fler(object):
         for level, conf in self.top_config.iteritems():
             if rank >= level:
                 return self.top_config[level]
+
+    def fix_timestamp(self, ts):
+        # Fix some weird timestamps having 2 instead of 1 as the first number
+        ts = int(ts)
+        if ts > 2490000000:
+            ts = ts - 1000000000
+        return ts
 
 
 class FlerApiException(Exception):

@@ -53,14 +53,6 @@ def write_carbon(args, data, timestamp=None):
     sock.close()
 
 
-def fix_timestamp(ts):
-    # Fix some weird timestamps having 2 instead of 1 as the first number
-    ts = int(ts)
-    if ts > 2490000000:
-        ts = ts - 1000000000
-    return ts
-
-
 def main():
     args = parse_args()
     setup_logging(args)
@@ -115,10 +107,10 @@ def main():
             "price": float(product["price"]),
             "price_without_prov": float(product["price_without_prov"]),
             "stock": int(product["stock"]),
-            "inserted": fix_timestamp(product["ts_ins"]),
-            "inserted_duration": int(time.time()) - fix_timestamp(product["ts_ins"]),
-            "topped": fix_timestamp(product["ts_top"]),
-            "topped_duration": int(time.time()) - fix_timestamp(product["ts_top"]),
+            "inserted": fler.fix_timestamp(product["ts_ins"]),
+            "inserted_duration": int(time.time()) - fler.fix_timestamp(product["ts_ins"]),
+            "topped": fler.fix_timestamp(product["ts_top"]),
+            "topped_duration": int(time.time()) - fler.fix_timestamp(product["ts_top"]),
         }
 
     write_carbon(args, res)
